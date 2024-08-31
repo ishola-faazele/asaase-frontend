@@ -117,7 +117,7 @@ const LandDAppHomePage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-8">Your Land DApp Home</h1>
+      <h1 className="text-3xl font-bold mb-8">Your Land Home</h1>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
