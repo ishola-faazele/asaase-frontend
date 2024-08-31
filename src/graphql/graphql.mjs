@@ -5,6 +5,7 @@ import { gql, request } from 'graphql-request';
 const url = 'https://api.studio.thegraph.com/query/84868/asaase-subgraph/version/latest';
 
 // Define the GraphQL queries
+// Define the GraphQL queries
 const queries = {
     ALL_LANDS: gql`
         query {
@@ -14,14 +15,16 @@ const queries = {
                     latitude
                     longitude
                 }
-                size
-                zoning
-                landName
-                region
-                city
                 value
                 owner
-                imageUrl
+                details {
+                    size
+                    zoning
+                    landName
+                    region
+                    city
+                    imageUrl
+                }
             }
         }
     `,
@@ -33,14 +36,16 @@ const queries = {
                     latitude
                     longitude
                 }
-                size
-                zoning
-                landName
-                region
-                city
                 value
                 owner
-                imageUrl
+                details {
+                    size
+                    zoning
+                    landName
+                    region
+                    city
+                    imageUrl
+                }
             }
         }
     `,
@@ -52,14 +57,15 @@ const queries = {
                     latitude
                     longitude
                 }
-                size
-                zoning
-                landName
-                region
-                city
                 value
-                owner
-                imageUrl
+                details {
+                    size
+                    zoning
+                    landName
+                    region
+                    city
+                    imageUrl
+                }
             }
         }
     `,
@@ -99,6 +105,7 @@ const queries = {
         }
     `
 };
+
 
 // Define the GraphQL class
 class GraphQLClient {

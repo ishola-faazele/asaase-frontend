@@ -7,6 +7,7 @@ const client = new GraphQLClient();
 const asaaseWeb3 = new AsaaseWeb3();
 
 const LandDAppHomePage = () => {
+  // State declarations
   const [account, setAccount] = useState('');
   const [lands, setLands] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -19,6 +20,7 @@ const LandDAppHomePage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Effect to connect wallet and fetch initial data
   useEffect(() => {
     const connectWallet = async () => {
       try {
@@ -30,13 +32,14 @@ const LandDAppHomePage = () => {
           setError('Failed to connect wallet. Please try again.');
         }
       } catch (err) {
-        setError('Failed to connect wallet. Please try again.', err);
+        setError(`Failed to connect wallet: ${err.message}`);
       }
     };
 
     connectWallet();
   }, []);
 
+  // Function to fetch user data
   const fetchUserData = async (address) => {
     try {
       const [landsData, transactionsData, balanceData] = await Promise.all([
@@ -45,22 +48,38 @@ const LandDAppHomePage = () => {
         asaaseWeb3.getBalanceOf(address)
       ]);
 
-      setLands(landsData.lands);
+      // Transform the lands data to match the expected structure
+      const transformedLands = landsData.lands.map(land => ({
+        id: land.id,
+        boundaryPoints: land.boundaryPoints,
+        size: land.details.size,
+        zoning: land.details.zoning,
+        landName: land.details.landName,
+        region: land.details.region,
+        city: land.details.city,
+        value: land.value,
+        owner: land.owner.id,
+        imageUrl: land.details.imageUrl
+      }));
+
+      setLands(transformedLands);
       setTransactions(transactionsData.transactions.slice(0, 5)); // Get latest 5 transactions
-      calculateTotalLandValue(landsData.lands);
+      calculateTotalLandValue(transformedLands);
       setLandTokenBalance(balanceData);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch user data. Please try again.', err);
+      setError(`Failed to fetch user data: ${err.message}`);
       setLoading(false);
     }
   };
 
+  // Function to calculate total land value
   const calculateTotalLandValue = (lands) => {
     const total = lands.reduce((sum, land) => sum + parseFloat(land.value), 0);
     setTotalLandValue(total);
   };
 
+  // Function to handle buying land
   const handleBuyLand = async () => {
     try {
       // In a real dApp, you would interact with a smart contract here.
@@ -84,6 +103,7 @@ const LandDAppHomePage = () => {
     }
   };
 
+  // Function to handle transferring land
   const handleTransferLand = async () => {
     try {
       const receipt = await asaaseWeb3.transferToken(account, transferTo, transferLandId);
@@ -96,6 +116,7 @@ const LandDAppHomePage = () => {
     }
   };
 
+  // Function to handle selling all land tokens
   const handleSellAllLandTokens = async () => {
     try {
       // This is a placeholder. In a real dApp, you would interact with a smart contract here.
@@ -111,14 +132,17 @@ const LandDAppHomePage = () => {
     }
   };
 
+  // Render loading state
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
 
+  // Main render
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-8">Your Land Home</h1>
 
+      {/* Error message */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
           <strong className="font-bold">Error!</strong>
@@ -126,6 +150,7 @@ const LandDAppHomePage = () => {
         </div>
       )}
 
+      {/* Success message */}
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
           <strong className="font-bold">Success!</strong>
@@ -133,7 +158,7 @@ const LandDAppHomePage = () => {
         </div>
       )}
 
-      {/* Rest of the component remains the same */}
+      {/* User stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-2">Total Land Value</h2>
@@ -149,6 +174,7 @@ const LandDAppHomePage = () => {
         </div>
       </div>
 
+      {/* Buy and Transfer Land forms */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Buy Land</h2>
@@ -192,6 +218,7 @@ const LandDAppHomePage = () => {
         </div>
       </div>
 
+      {/* Land table */}
       <div className="bg-white shadow rounded-lg p-6 mb-8">
         <h2 className="text-xl font-semibold mb-4">Your Lands</h2>
         <div className="overflow-x-auto">
@@ -209,8 +236,8 @@ const LandDAppHomePage = () => {
                 <tr key={land.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{land.id}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{land.landName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{land.size}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{land.value} ETH</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{land.size.toString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{(parseFloat(land.value) / 1e18).toFixed(2)} ETH</td>
                 </tr>
               ))}
             </tbody>
@@ -218,6 +245,7 @@ const LandDAppHomePage = () => {
         </div>
       </div>
 
+      {/* Transactions table */}
       <div className="bg-white shadow rounded-lg p-6 mb-8">
         <h2 className="text-xl font-semibold mb-4">Latest Transactions</h2>
         <div className="overflow-x-auto">
@@ -235,7 +263,7 @@ const LandDAppHomePage = () => {
                 <tr key={tx.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{tx.from}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{tx.to}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{tx.value} ETH</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{(parseFloat(tx.value) / 1e18).toFixed(2)} ETH</td>
                   <td className="px-6 py-4 whitespace-nowrap">{new Date(parseInt(tx.timestamp) * 1000).toLocaleString()}</td>
                 </tr>
               ))}
@@ -244,6 +272,7 @@ const LandDAppHomePage = () => {
         </div>
       </div>
 
+      {/* Land Value Chart */}
       <div className="bg-white shadow rounded-lg p-6 mb-8">
         <h2 className="text-xl font-semibold mb-4">Land Value Over Time</h2>
         <ResponsiveContainer width="100%" height={300}>
@@ -258,6 +287,7 @@ const LandDAppHomePage = () => {
         </ResponsiveContainer>
       </div>
 
+      {/* Sell All Land Tokens button */}
       <button 
         onClick={handleSellAllLandTokens}
         className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
