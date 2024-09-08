@@ -28,7 +28,7 @@ const Navbar = ({ account, onConnect, onSearch }) => {
               Dashboard
             </Link>
             <Link to="/mint" className="text-white hover:text-gray-400">
-              Mint
+              Register Land
             </Link>
             <div className="relative">
               <input

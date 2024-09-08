@@ -102,7 +102,7 @@ const MintPage = () => {
   return (
     <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: 'auto', mt: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Mint New Token
+        Register Land
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={3}>
@@ -244,7 +244,7 @@ const MintPage = () => {
               disabled={loading}
               startIcon={loading ? <CircularProgress size={20} /> : null}
             >
-              {loading ? 'Minting...' : 'Mint Token'}
+              {loading ? 'Registering...' : 'Register Land'}
             </Button>
           </Grid>
         </Grid>
