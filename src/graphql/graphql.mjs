@@ -78,7 +78,7 @@ const queries = {
     `,
     MOST_TOKENS_ACCOUNT: gql`
         query {
-            accounts(orderBy: tokenBalance, orderDirection: desc, first: 1) {
+            owners(orderBy: tokenBalance, orderDirection: desc, first: 1) {
                 id
                 tokenBalance
             }
@@ -135,7 +135,10 @@ class GraphQLClient {
 
     // Function to fetch the account with the most tokens
     async fetchMostTokensAccount() {
-        return await request(this.url, queries.MOST_TOKENS_ACCOUNT);
+        const response = await request(this.url, queries.MOST_TOKENS_ACCOUNT);
+        // return await request(this.url, queries.MOST_TOKENS_ACCOUNT);
+        console.log(response);
+        // return response.owners[0];
     }
 
     // Function to fetch the top x most expensive tokens
